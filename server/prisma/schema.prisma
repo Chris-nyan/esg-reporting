@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  name              String?
+  password          String?
+  googleId          String?  @unique
+  isVerified        Boolean  @default(false)
+  verificationToken String?
+  createdAt         DateTime @default(now())
+
+  // ADD THIS LINE: This tells Prisma that one user can have many reports
+  reports Report[]
+}
+
+model Report {
+  id         String   @id @default(uuid())
+  name       String
+  period     String
+  framework  String
+  coverPhoto String?
+  status     String   @default("pending")
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+}
